@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Eagle SQL</title>
+  <link rel="stylesheet" href="./R/css/fontawesome-all.css">
+  <!-- <link rel="stylesheet" href="./R/js/prismjs/themes/prism.css">   -->
+  <link rel="stylesheet" href="./R/css/styles.min.css">
+</head>
+
+<body>
+  <header>
+    <img src="R/img/logo.png" alt="">
+    <ul class="topBtns">
+      <li>
+        <span id="runBtn">
+          <i class="fas fa-play"></i> Run</span>
+      </li>
+      <li>
+        <span>Option2</span>
+      </li>
+    </ul>
+  </header>
+
+  <div id="mainPanel">
+    <div id="codeContainer">
+      <div id="my-code-wrapper" data-language="sql"></div>
+    </div>
+    <div id="tableContainer">
+      <ul>
+        <li>
+          <ul>
+            <li>No.</li>
+            <li>Línea</li>
+            <li>Token</li>
+            <li>Tipo</li>
+            <li>Codigo</li>
+          </ul>
+        </li>
+        <li>
+          <ul>
+            <li>&nbsp;</li>
+            <li>&nbsp;</li>
+            <li>&nbsp;</li>
+            <li>&nbsp;</li>
+            <li>&nbsp;</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div id="statateBar">
+      <p>
+        <span id="tablaLexica">
+          Tabla lexica
+        </span>
+      </p>
+      <p>
+        <span class="stateTitle error">Errro #000: </span>
+        Error en línea
+        <span>00</span> especificacion.
+      </p>
+    </div>
+  </div>
+  <script src="./R/js/jquery-3.3.1.min.js"></script>
+  <script src="./R/js/split.min.js"></script>
+  <!-- <script src="./R/js/prismjs/prism.js"></script> -->
+  <script src="./R/js/codeflask/build/codeflask.min.js"></script>
+  <script src="./R/js/controllers.js"></script>
+  <!-- <script src="./R/js/scanner.js"></script> -->
+</body>
+
+</html>
