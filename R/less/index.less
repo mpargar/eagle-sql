@@ -74,7 +74,7 @@ html{
       }
     }
     #mainPanel{
-      height: 89vh;
+      height: 88.9vh;
       #codeContainer{
         overflow: hidden;
         position: relative;
@@ -87,13 +87,17 @@ html{
         overflow: auto;
         .magic-table(@colorThemeMainG2, @colorIndicator);
         >ul{
+          padding-top: 24px;
           >li{
             >ul{
               >li{
                 font-family: monospace;
+                font-size: 9px;
               }
             }
             &:first-child{
+              position: fixed;
+              margin-top: -25px;
               >ul{
                 >li{
                   font-family: 'stareagle';
@@ -134,6 +138,15 @@ html{
           }
           &:last-child{
             text-align: right;
+            .stateTitle{
+              font-weight: bold;
+            }
+            .error{
+              color: #971B00;
+            }
+            .success{
+              color: #009700;
+            }
           }
         }
       }

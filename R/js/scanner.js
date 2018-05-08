@@ -9,7 +9,6 @@ function crearTabla(cont) {
   let resultados = new Array();
   // Se prepapra el texto para ser separado por saltos de línea
   cont = cont.split(/(\r\n|\n|\r)/gm); //Separa el texto por saltos de linea
-  console.log(cont);
   
   //Generar renglones
   for(let i = 0; i<cont.length; i++){
@@ -18,7 +17,6 @@ function crearTabla(cont) {
       renglones.push(cont[i]);
     }
   }
-  console.log(renglones);
 
   for(let i = 0; i<renglones.length; i++){
     if(renglones[i].replace(/\s/g,'')!=''){ //Limpiar los renglones vacios
@@ -31,7 +29,8 @@ function crearTabla(cont) {
               ren.push(["'"+temp[j+1]+"'", i+1, 62]);
               j+=2;
             }else{
-              return {error: true, info: 'No se cerraron las comillas.'};
+              console.log(ren);
+              return {error: true, code: '205', linea: i+1};
             }
           }else{
             ren.push([temp[j], i+1]);
@@ -40,7 +39,6 @@ function crearTabla(cont) {
       }
     }
   }
-  console.log(ren);
 
     //Filtra para limpiar los espacios
     for(let i = 0; i<ren.length; i++){
@@ -54,7 +52,6 @@ function crearTabla(cont) {
         resultados.push(ren[i])
       }
     }
-  console.log(resultados);
   
   
   //Separar elementos.
@@ -68,7 +65,7 @@ function crearTabla(cont) {
     }else if(sintacticTable[n[0].toLowerCase()]){
       tablita.push([ n[0], n[1], sintacticTable[n[0].toLowerCase()].valor, sintacticTable[n[0].toLowerCase()].simbolo ]);      
     } else{
-      let simbolo = /<|>|\+|\-|\*|\/|\,|\.|\(|\)|\=/g;
+      let simbolo = /<|>|\+|\-|\*|\/|\,|\.|\(|\)|\=|\;/g;
       let aux = '';
       let reservado = false;
       for(let i = 0; i<n[0].length; i++){
@@ -95,7 +92,6 @@ function crearTabla(cont) {
       }
     }
   });
-  console.log(tablita);
 
   //Rellenar faltantes
   for(let i = 0; i<tablita.length; i++){
@@ -119,8 +115,8 @@ function imprimirTabla(data, target){
       <li>No.</li>
       <li>Token</li>
       <li>Línea</li>
-      <li>Código</li>
-      <li>Tipo</li>
+      <li>Símbolo</li>
+      <li>Valor</li>
     </ul>
   </li>`);
   data.forEach((d, i) =>{
