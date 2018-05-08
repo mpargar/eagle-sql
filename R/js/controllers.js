@@ -2,7 +2,7 @@
 var flask;
 var sintacticTable;
 var tablaLexica;
-var $tablaLexica;
+var $tablaLexica_btn;
 var $tableContainer;
 var $runBtn;
 
@@ -127,6 +127,10 @@ $(function(){
     //   'simbolo': 'a',
     //   'valor' : 62
     // },
+    // 'c':{ // Identificador
+    //   'simbolo': 'c',
+    //   'valor' : 63
+    // },
     // Operadores
     '+':{
       'simbolo': '+',
@@ -172,9 +176,9 @@ $(function(){
     direction: 'vertical',  
     sizes: [99, 1]
   });
-  $tablaLexica = $('#tablaLexica');
-  $tableContainer = $( '#tableContainer' );
-  $tablaLexica.click(function(event) {
+  $tablaLexica_btn = $('#tablaLexica');
+  $tableContainer = $( '#tableContainer > ul' );
+  $tablaLexica_btn.click(function(event) {
     if(paneles.getSizes()[1]<=1){
       paneles.setSizes([70, 30]);
     }else{
@@ -211,6 +215,11 @@ $(function(){
   //Boton
   $runBtn = $('#runBtn');
   $runBtn.on('click', function(){
-    crearTabla(flask.getCode());
+    tablaLexica = crearTabla(flask.getCode());
+    if(!tablaLexica.error){
+      imprimirTabla(tablaLexica, $tableContainer);
+    }else{
+      //Imprimir .info
+    }
   });
 });

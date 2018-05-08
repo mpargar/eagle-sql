@@ -31,8 +31,7 @@ function crearTabla(cont) {
               ren.push(["'"+temp[j+1]+"'", i+1, 62]);
               j+=2;
             }else{
-              console.log('No esta cerrado el texto');
-              return false;
+              return {error: true, info: 'No se cerraron las comillas.'};
             }
           }else{
             ren.push([temp[j], i+1]);
@@ -75,7 +74,7 @@ function crearTabla(cont) {
       for(let i = 0; i<n[0].length; i++){
         if(n[0][i].match(simbolo)){
           if(reservado){
-            tablita.push(aux);
+            tablita.push([aux, n[1]]);
             aux = '';
           }
           aux += n[0][i]
@@ -83,7 +82,7 @@ function crearTabla(cont) {
             aux += n[0][i+1];
             i++;
           }
-          tablita.push(aux);
+          tablita.push([aux, n[1]]);
           aux = '';
           reservado = false;
         }else{
@@ -92,18 +91,48 @@ function crearTabla(cont) {
         }
       }
       if(aux!=''){
-        tablita.push(aux);
+        tablita.push([aux, n[1]]);
       }
     }
   });
   console.log(tablita);
 
   //Rellenar faltantes
-  // for(let i = 0; i<tablita.length; i++){
-  //   if(!Array.isArray(tablita[i])){
-  //     if(sintacticTable[tablita[i].toLowerCase()]){
-  //       tablita[i] = [tablita[i], ]
-  //     }
-  //   }
-  // }
+  for(let i = 0; i<tablita.length; i++){
+    if(!tablita[i][2]){
+        if(sintacticTable[tablita[i][0]]){
+          tablita[i].push(sintacticTable[tablita[i][0]].valor ,sintacticTable[tablita[i][0]].simbolo);
+        } else if(tablita[i][0].match(/^-?\d+\.?\d*$/)){
+          tablita[i].push(61, 'd');
+        }else{
+          tablita[i].push(63, 'c');
+        }
+    }
+  }
+  return tablita;
+}
+
+function imprimirTabla(data, target){
+  target.html(`
+  <li>
+    <ul>
+      <li>No.</li>
+      <li>Token</li>
+      <li>Línea</li>
+      <li>Código</li>
+      <li>Tipo</li>
+    </ul>
+  </li>`);
+  data.forEach((d, i) =>{
+    target.append(`
+    <li>
+      <ul>
+        <li>${i+1}</li>
+        <li>${d[0]}</li>
+        <li>${d[1]}</li>
+        <li>${d[2]}</li>
+        <li>${d[3]}</li>
+      </ul>
+    </li>`);
+  })
 }
