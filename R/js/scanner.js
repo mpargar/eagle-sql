@@ -42,45 +42,68 @@ function crearTabla(cont) {
     }
   }
   console.log(ren);
+
+    //Filtra para limpiar los espacios
+    for(let i = 0; i<ren.length; i++){
+      if(!ren[i][2]){
+        let aux = ren[i][0].split(/\s/g);
+        for(let j = 0; j<aux.length; j++){
+          if(aux[j]!='')
+            resultados.push([aux[j], ren[i][1]])
+        }
+      }else{
+        resultados.push(ren[i])
+      }
+    }
+  console.log(resultados);
   
-  // //Separar elementos.
-  // let tablita  = new Array();
-  // //Resultados obtiene el valor de resultados
-  // resultados.forEach( (n, i) =>{
-  //   //Si esta dentro del lexema
-  //   if(sintacticTable[n[1]]){
-  //     console.log('LEXEMA');
-  //     tablita.push(n);
-  //   }else{
-  //     let simbolo = /<|>|\+|\-|\*|\/|\,|\.|\(|\)|\=/g;
-  //     // n[1].forEach( $ => {
-  //     //   if($)
-  //     // })
-  //     let aux = '';
-  //     let reservado = false;
-  //     for(let i = 0; i<n[1].length; i++){
-  //       if(n[1][i].match(simbolo)){
-  //         if(reservado){
-  //           tablita.push(aux);
-  //           aux = '';
-  //         }
-  //         aux += n[1][i]
-  //         if((aux == '<' || aux == '>') && n[1][i+1]==='='){
-  //           aux += n[1][i+1];
-  //           i++;
-  //         }
-  //         tablita.push(aux);
-  //         aux = '';
-  //         reservado = false;
-  //       }else{
-  //         reservado = true;
-  //         aux+=n[1][i];
-  //       }
-  //     }
-  //     if(aux!=''){
-  //       tablita.push(aux);
+  
+  //Separar elementos.
+  let tablita  = new Array();
+
+  //Resultados obtiene el valor de resultados
+  resultados.forEach( (n, i) =>{
+    //Si esta dentro del lexema
+    if(n[2]){
+      tablita.push([n[0], n[1], n[2], 'a']);
+    }else if(sintacticTable[n[0].toLowerCase()]){
+      tablita.push([ n[0], n[1], sintacticTable[n[0].toLowerCase()].valor, sintacticTable[n[0].toLowerCase()].simbolo ]);      
+    } else{
+      let simbolo = /<|>|\+|\-|\*|\/|\,|\.|\(|\)|\=/g;
+      let aux = '';
+      let reservado = false;
+      for(let i = 0; i<n[0].length; i++){
+        if(n[0][i].match(simbolo)){
+          if(reservado){
+            tablita.push(aux);
+            aux = '';
+          }
+          aux += n[0][i]
+          if((aux == '<' || aux == '>') && n[1][i+1]==='='){
+            aux += n[0][i+1];
+            i++;
+          }
+          tablita.push(aux);
+          aux = '';
+          reservado = false;
+        }else{
+          reservado = true;
+          aux+=n[0][i];
+        }
+      }
+      if(aux!=''){
+        tablita.push(aux);
+      }
+    }
+  });
+  console.log(tablita);
+
+  //Rellenar faltantes
+  // for(let i = 0; i<tablita.length; i++){
+  //   if(!Array.isArray(tablita[i])){
+  //     if(sintacticTable[tablita[i].toLowerCase()]){
+  //       tablita[i] = [tablita[i], ]
   //     }
   //   }
-  // });
-  // console.log(tablita);
+  // }
 }
