@@ -6,6 +6,12 @@ var $tablaLexica;
 var $tableContainer;
 var $runBtn;
 
+//String prototype, para generar foreach
+String.prototype.forEach = function (call) {
+  var a = this.split('');
+  a.forEach(e => { call(e) })
+}
+
 // On ready
 $(function(){
   //Tabla sintactia
@@ -113,14 +119,14 @@ $(function(){
       'valor' :  54
     },
     // Constantes
-    'd':{
-      'simbolo': 'd',
-      'valor' : 61
-    },
-    'a':{
-      'simbolo': 'a',
-      'valor' : 62
-    },
+    // 'd':{
+    //   'simbolo': 'd',
+    //   'valor' : 61
+    // },
+    // 'a':{
+    //   'simbolo': 'a',
+    //   'valor' : 62
+    // },
     // Operadores
     '+':{
       'simbolo': '+',
@@ -160,7 +166,6 @@ $(function(){
       'valor':85
     }
   };
-
   
   // Resizable panel
   var paneles = Split(['#codeContainer', '#tableContainer'], {
@@ -178,7 +183,6 @@ $(function(){
   });
   
   // SQL language
-
   sqlSintax = {
     'comment': {
       pattern: /(^|[^\\])(?:\/\*[\s\S]*?\*\/|(?:--|\/\/|#).*)/,
@@ -203,4 +207,10 @@ $(function(){
     lineNumbers: true
   });
   flask.addLanguage('sql', sqlSintax);
+  
+  //Boton
+  $runBtn = $('#runBtn');
+  $runBtn.on('click', function(){
+    crearTabla(flask.getCode());
+  });
 });
