@@ -303,8 +303,8 @@ $(function(){
       imprimirTabla(tablaLexica, $tableContainer);
       if(paneles.getSizes()[1]<=1){
         paneles.setSizes([70, 30]);
-        checkSintax(tablaLexica, DDL, DML);
       }
+      checkSintax(tablaLexica);
     }else{
       updateInfoMessage(tablaLexica.code, tablaLexica.linea);
     }

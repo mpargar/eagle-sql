@@ -29,7 +29,6 @@ function crearTabla(cont) {
               ren.push(["'"+temp[j+1]+"'", i+1, 62]);
               j+=2;
             }else{
-              console.log(ren);
               return {error: true, code: '205', linea: i+1};
             }
           }else{
@@ -104,7 +103,7 @@ function crearTabla(cont) {
           tablita[i].push(63, 'c');
         }
     }
-  }
+  }  
   return tablita;
 }
 
