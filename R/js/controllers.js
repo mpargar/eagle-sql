@@ -177,8 +177,8 @@ $(function(){
     }
   };
   DML = [
-    [null, 4, 8, 10, 11, 12, 13, 14, 15, 50, 51, 53, 54, 6, 1, 6, 2, 72, 199],
-    [300, null, null, [10, 301, 11 , 306 , 310], null, null, null, null, null, null, null, null, null, null, null, null, null],
+    [null, 4, 8, 10, 11, 12, 13, 14, 15, 50, 51, 53, 54, 61, 62, 72, 199],
+    [300, null, null, [10, 301, 11, 306, 310], null, null, null, null, null, null, null, null, null, null, null, null, null],
     [301, [302], null, null, null, null, null, null, null, null, null, null, null, null, null, [72], null],
     [302, [304, 303], null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
     [303, null, null, null, [99], null, null, null, null, [50, 302], null, null, null, null, null, null, [99]],
@@ -196,7 +196,7 @@ $(function(){
     [315, null, [8], null, null, null, null, null, null, null, null, null, null, null, null, null, null],
     [316, [304], null, null, null, null, null, null, null, null, null, null, [54, 318, 54], [319], null, null, null],
     [317, null, null, null, null, null, null, [14], [15], null, null, null, null, null, null, null, null],
-    [318, null, null, null, null, null, null, null, null, null, null, null, null, null, 62, null, null],
+    [318, null, null, null, null, null, null, null, null, null, null, null, null, null, [62], null, null],
     [319, null, null, null, null, null, null, null, null, null, null, null, null, [61], null, null, null]
   ];
   DDL = [
@@ -217,46 +217,46 @@ $(function(){
     [213, null, null, null, null, null, null, null, null, null, null, null, null, [54, 62, 54], [61], null],
     [214, null, null, null, null, null, null, null, null, null, null, [50, 212], [99], null, null, null],
     [214, null, [200], null, null, null, null, null, null, null, [211], null, null, null, null, [99]],
-    
+
   ]
   error_codes = {
     '101': {
       code:101,
-      text: 'Símbolo desconocido.'  
+      text: 'Símbolo desconocido.'
     },
     '200': {
       code:200,
-      text: 'Sin error.'  
+      text: 'Sin error.'
     },
     '201': {
       code:201,
-      text: 'Se es peraba Palabra Reservada.'  
+      text: 'Se es peraba Palabra Reservada.'
     },
     '204': {
       code:204,
-      text: 'Se esperaba Identificador.'  
+      text: 'Se esperaba Identificador.'
     },
     '205': {
       code:205,
-      text: 'Se esperaba Delimitador.'  
+      text: 'Se esperaba Delimitador.'
     },
     '206': {
       code:206,
-      text: 'Se esperaba Constante.'  
+      text: 'Se esperaba Constante.'
     },
     '207': {
       code:207,
-      text: 'Se esperaba Operador.'  
+      text: 'Se esperaba Operador.'
     },
     '208': {
       code:208,
-      text: 'Se esperaba Operador Relacional.'  
+      text: 'Se esperaba Operador Relacional.'
     }
   }
 
   // Resizable panel
   var paneles = Split(['#codeContainer', '#tableContainer'], {
-    direction: 'vertical',  
+    direction: 'vertical',
     sizes: [99, 1]
   });
   $tablaLexica_btn = $('#tablaLexica');
@@ -268,7 +268,7 @@ $(function(){
       paneles.setSizes([99, 1]);
     }
   });
-  
+
   // SQL language
   sqlSintax = {
     'comment': {
@@ -294,7 +294,7 @@ $(function(){
     lineNumbers: true
   });
   flask.addLanguage('sql', sqlSintax);
-  
+
   //Boton
   $runBtn = $('#runBtn');
   $runBtn.on('click', function(){
@@ -319,7 +319,7 @@ function updateInfoMessage(c, linea){
   }else{
     $('#infoMessages').html(
       `<span class="stateTitle error">
-        <i class="fa fa-times" aria-hidden="true"></i> 
+        <i class="fa fa-times" aria-hidden="true"></i>
         Errror #${error_codes[c].code}:
        </span>
       Error en línea
