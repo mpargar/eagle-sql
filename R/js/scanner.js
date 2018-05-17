@@ -64,7 +64,7 @@ function crearTabla(cont) {
     }else if(sintacticTable[n[0].toLowerCase()]){
       tablita.push([ n[0], n[1], sintacticTable[n[0].toLowerCase()].valor, sintacticTable[n[0].toLowerCase()].simbolo ]);
     } else{
-      let simbolo = /<|>|\+|\-|\*|\/|\,|\.|\(|\)|\=|\;/g;
+      let simbolo = /<|>|\+|\-|\*|\/|\,|\(|\)|\=|\;/g;
       let aux = '';
       let reservado = false;
       for(let i = 0; i<n[0].length; i++){
@@ -74,7 +74,7 @@ function crearTabla(cont) {
             aux = '';
           }
           aux += n[0][i]
-          if((aux == '<' || aux == '>') && n[1][i+1]==='='){
+          if((aux == '<' || aux == '>') && n[0][i+1]=='='){
             aux += n[0][i+1];
             i++;
           }
