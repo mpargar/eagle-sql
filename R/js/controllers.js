@@ -283,7 +283,11 @@ DML = {
   'tabla': {
     'links': [',2', 'where', ')', ';'],
     'match': function(x){
-      return x.match( /^([A-Z])+([\w|\#])*$/gi);
+			if(sintacticTable[x]){
+				return false;
+			}else{
+				return x.match( /^([A-Z])+([\w|\#|\d])*$/gi);
+			}
     },
     'state': false,
     'err': function(){

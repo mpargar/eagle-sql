@@ -14,6 +14,7 @@ function checkSintax(sentencias) {
     return false;
   }else{
     updateInfoMessage(200);
+		return true;
   }
 }
 

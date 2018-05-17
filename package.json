@@ -16,7 +16,7 @@
   ],
   "author": "Miguel Parra García",
   "license": "CC0-1.0",
-  "devDependencies": {
+  "dependencies": {
     "electron": "^2.0.0"
   }
 }
