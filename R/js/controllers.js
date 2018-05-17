@@ -354,7 +354,7 @@ DML = {
     },
     'state': false,
     'err': function(){
-      console.log();
+      console.log('identi1');
       return [201, 208];
     }
   },
@@ -365,7 +365,7 @@ DML = {
     },
     'state':false,
     'err': function(){
-      console.log();
+      console.log('relacional');
       return [204, 206];
     }
   },
@@ -380,7 +380,7 @@ DML = {
     },
     'state': false,
     'err': function(){
-      console.log();
+      console.log('num2');
       return [201, 205];
     }
   },
@@ -395,7 +395,7 @@ DML = {
     },
     'state': false,
     'err': function(){
-      console.log();
+      console.log('txt2');
       return [201, 205];
     }
   },
@@ -410,57 +410,51 @@ DML = {
     },
     'state': false,
     'err': function(){
-      console.log();
+      console.log('identi2');
       return [201, 205];
     }
   },
   ')': {
     'links':[')', 'and', ';'],
-    'match': function(x, contexto){
-      if(contexto.pila==0 || x!=')'){
-        return false;
-      }else {
-        contexto.pila.pop();
-        return true;
-      }
+    'match': function(x){
+      return x==')'
     },
     'state': false,
     'err': function(){
-      console.log();
+      console.log(')');
       return [205, 201];
     }
   },
   'and': {
     'links':['identi1', 'num1', 'txt1'],
     'match': function(x){
-      return x=='and';
+      return x.match( /^(AND)$/i);
     },
     'state':false,
     'err': function(){
-      console.log();
+      console.log('and');
       return [204, 206];
     }
   },
   'in': {
     'links': ['('],
     'match': function(x){
-      return x=='in';
+      return x.match( /^(IN)$/i);
     },
     'state': false,
     'err': function(){
-      console.log();
+      console.log('in');
       return 205;
     }
   },
   '(': {
     'links':['select'],
-    'match': function (x, contexto) {
-      contexto.pila.push('(');
+    'match': function (x) {
       return x=='(';
     },
     'state': false,
     'err': function(){
-      console.log();
+      console.log('(');
       return 201;
     }
   },
