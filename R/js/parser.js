@@ -14,7 +14,7 @@ function checkSintax(sentencias) {
     return false;
   }else{
     updateInfoMessage(200);
-		return true;
+    return true;
   }
 }
 
@@ -23,23 +23,35 @@ function checkStatement(statement){
   let arbol;
   if(statement[0][0].toLowerCase()=='select'){
     arbol = DML;
-    apun = 'select'
-  }else{
+    apun = 'select';
+  }else if(statement[0][0].toLowerCase()=='create'){
+    arbol = DDL_CREATE;
+    apun = 'create';
+  }else if(statement[0][0].toLowerCase()=='insert'){
+    arbol = DDL_INSERT;
+    apun = 'insert';
+  }
+  else{
     updateInfoMessage(201, statement[0][1]);
     return false;
   }
   for(let i = 1; i<statement.length; i++){
     if(statement[i][0]=='('){
-      pila.push('(')
+      pila.push('(');
     }else if(statement[i][0]==')'){
-      pila.pop();
+      if(pila.length == 0){
+        updateInfoMessage(205, statement[statement.length-1][1]);
+        return false;
+      }else{
+        pila.pop();
+      }
     }
     if(!stMatch(statement[i], arbol, apun, this)){
       return false;
     }
   }
   if(pila.length==0){
-    return true
+    return true;
   }else{
     updateInfoMessage(205, statement[statement.length-1][1]);
     return false;
@@ -49,7 +61,7 @@ function checkStatement(statement){
 function stMatch(st, ar, ap, ctx){ //statement, arbol, apuntador, contexto
   for(let j = 0; j<ar[ap].links.length; j++){
     let s = ar[ap].links[j];
-    if(ar[s].match(st[0], this)){
+    if(ar[s].match(st[0].toLowerCase(), this)){
       ctx.apun = s;
       return true;
     }

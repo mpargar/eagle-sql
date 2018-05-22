@@ -6,8 +6,8 @@
   font-style: normal;
   font-weight: normal;
   src: url("../webfonts/stareagle.ttf");
-} 
-*{ 
+}
+*{
   margin: 0;
   padding: 0;
 }
@@ -81,10 +81,14 @@ html{
         #my-code-wrapper{
           width: 100%;
           height: 100%;
+          .codeflask__flatten {
+            white-space: pre-wrap;
+          }
         }
       }
       #tableContainer{
         overflow: auto;
+        overflow-x: hidden;
         .magic-table(@colorThemeMainG2, @colorIndicator);
         >ul{
           padding-top: 24px;

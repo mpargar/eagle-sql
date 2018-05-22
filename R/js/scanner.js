@@ -106,28 +106,3 @@ function crearTabla(cont) {
   }
   return tablita;
 }
-
-function imprimirTabla(data, target){
-  target.html(`
-  <li>
-    <ul>
-      <li>No.</li>
-      <li>Token</li>
-      <li>Línea</li>
-      <li>Símbolo</li>
-      <li>Valor</li>
-    </ul>
-  </li>`);
-  data.forEach((d, i) =>{
-    target.append(`
-    <li>
-      <ul>
-        <li>${i+1}</li>
-        <li>${d[0]}</li>
-        <li>${d[1]}</li>
-        <li>${d[2]}</li>
-        <li>${d[3]}</li>
-      </ul>
-    </li>`);
-  })
-}
