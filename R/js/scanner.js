@@ -2,8 +2,6 @@ function crearTabla(cont) {
   /*
     Preparar el textbox para el analisis
   */
-
-  //Separar por renglones
   let renglones = new Array();
   let ren = new Array();
   let resultados = new Array();
@@ -74,7 +72,9 @@ function crearTabla(cont) {
             aux = '';
           }
           aux += n[0][i]
-          if((aux == '<' || aux == '>') && n[0][i+1]=='='){
+          if(
+            ((aux == '<' || aux == '>') && n[0][i+1]=='=') || (((aux == '<') && n[0][i+1]=='>'))
+          ){
             aux += n[0][i+1];
             i++;
           }
