@@ -962,7 +962,7 @@ $(function(){
       'state': false,
       'err': function(){
         console.log('(2');
-        return 204;
+        return 206;
       }
     },
     'constante': {
