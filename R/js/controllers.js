@@ -1212,19 +1212,18 @@ $(function(){
       },
       'semantico': function(x, line){
         for(let i in semantica.atributos){
-          if(semantica.atributos[i].table == insertStack.table && semantica.atributos[i].nombre == x){
+          if(semantica.atributos[i].tabla == insertStack.table && semantica.atributos[i].nombre == x){
             for(let j in insertStack.atribs){
               if(insertStack.atribs[j]==x){
                 insertStack.atribs.splice(j, 1);
-                insertStack.atribs.values.push({
+                insertStack.values.push({
                   'nombre': semantica.atributos[i].nombre,
                   'tipo': semantica.atributos[i].tipo,
-                  'logitud': semantica.atributos[i].longitud
+                  'longitud': semantica.atributos[i].longitud
                 });
                 return true;
               }
             }
-
             updateInfoMessage(302, line);
             return false;
           }
@@ -1272,29 +1271,7 @@ $(function(){
         return 205;
       },
       'semantico': function(x){
-        if(insertStack.values.length==0){
-
-        }else{
-          if(insertStack.values[0].tipo == 'numeric' && x[0]=="\'" ){
-            if(insertStack.values[0].longitud < x.length-2){
-              updateInfoMessage(308, line)
-              return false;
-            }else{
-              return true;
-            }
-          }else if(insertStack.values[0].tipo != 'numeric' && x[0]!="\'"){
-            if(insertStack.values[0].longitud < x.length){
-              updateInfoMessage(308, line)
-              return false;
-            }else{
-              return true;
-            }
-          }
-          else{
-            updateInfoMessage(307, line)
-            return false;
-          }
-        }
+        return true;
       }
     },
     '(2': {
@@ -1326,8 +1303,33 @@ $(function(){
         return 205;
       },
       'semantico': function(x, linea){
-        // for(let i in )
-        return true;
+        console.log(insertStack.values[0].tipo, x.length);
+        if(insertStack.values.length==0){
+          
+        }else{
+          if(insertStack.values[0].tipo == 'numeric' && x[0]!="\'" ){
+            // console.log('-> 1');
+            if(insertStack.values[0].longitud < x.length){
+              updateInfoMessage(308, linea)
+              return false;
+            }else{
+              return true;
+            }
+          }else if(insertStack.values[0].tipo == 'char' && x[0]=="\'"){
+            // console.log('-> 2');
+            // console.log(insertStack.values[0], x.length-2);
+            if(insertStack.values[0].longitud < x.length-2){
+              updateInfoMessage(308, linea)
+              return false;
+            }else{
+              return true;
+            }
+          }
+          else{
+            updateInfoMessage(307, linea)
+            return false;
+          }
+        }
       }
     },
     ',2': {
