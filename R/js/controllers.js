@@ -5,17 +5,28 @@ var tablaLexica;
 var $tablaLexica_btn;
 var $tableContainer;
 var $runBtn;
+var $eraseBtn;
 var error_codes;
 var DML;
 var DDL_CREATE;
 var DDL_INSERT;
 var paneles;
+var semantica = {
+  tabla:[],
+  atributos:[],
+  restricciones:[]
+};
+var semantica_copy = {};
+var insertStack = {
+  'table': '',
+  'atribs': [],
+  'values':[]
+}
 //String prototype, para generar foreach
 String.prototype.forEach = function (call) {
   var a = this.split('');
   a.forEach(e => { call(e) })
 }
-
 // On ready
 $(function(){
   //Tabla sintactia
@@ -188,6 +199,9 @@ $(function(){
       'err': function(){
         console.log('select');
         return 204;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     '*': {
@@ -199,6 +213,9 @@ $(function(){
       'err': function(){
         console.log('*');
         return 201;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'atrib1': {
@@ -214,6 +231,9 @@ $(function(){
       'err': function(){
         console.log('atrib1');
         return [201, 205];
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     ',1': {
@@ -225,6 +245,9 @@ $(function(){
       'err': function(){
         console.log(',1');
         return 204;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'from': {
@@ -236,6 +259,9 @@ $(function(){
       'err': function(){
         console.log('from');
         return 204;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'tabla': {
@@ -251,6 +277,9 @@ $(function(){
       'err': function(){
         console.log('tabla');
         return [205, 201];
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     ',2': {
@@ -262,6 +291,9 @@ $(function(){
       'err': function(){
         console.log(',2');
         return 204;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'tabla-as': {
@@ -277,6 +309,9 @@ $(function(){
       'err': function(){
         console.log('tabla-as');
         return [205, 201];
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'where': {
@@ -288,6 +323,9 @@ $(function(){
       'err': function(){
         console.log('where');
         return [204, 206];
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'not': {
@@ -299,6 +337,9 @@ $(function(){
       'err': function(){
         console.log('not');
         return 205;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     '(1':{
@@ -310,6 +351,9 @@ $(function(){
       'err': function(){
         console.log('where');
         return [204, 206];
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'num1': {
@@ -325,6 +369,9 @@ $(function(){
       'err': function(){
         console.log('num1');
         return [208, 201];
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'txt1': {
@@ -340,6 +387,9 @@ $(function(){
       'err': function (){
         console.log('txt1');
         return [208, 201]
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'identi1': {
@@ -355,6 +405,9 @@ $(function(){
       'err': function(){
         console.log('identi1');
         return [208, 201];
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'operator1': {
@@ -366,6 +419,9 @@ $(function(){
       'err': function(){
         console.log('operator1');
         return [204, 206];
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'relacional': {
@@ -377,6 +433,9 @@ $(function(){
       'err': function(){
         console.log('relacional');
         return [204, 206];
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'num2': {
@@ -392,6 +451,9 @@ $(function(){
       'err': function(){
         console.log('num2');
         return [201, 205];
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'txt2': {
@@ -407,6 +469,9 @@ $(function(){
       'err': function(){
         console.log('txt2');
         return [201, 205];
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'identi2': {
@@ -422,6 +487,9 @@ $(function(){
       'err': function(){
         console.log('identi2');
         return [201, 205];
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'operator2': {
@@ -433,6 +501,9 @@ $(function(){
       'err': function(){
         console.log('operator2');
         return [204, 206];
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     ')': {
@@ -444,6 +515,9 @@ $(function(){
       'err': function(){
         console.log(')');
         return [205, 201];
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'andOr': {
@@ -455,6 +529,9 @@ $(function(){
       'err': function(){
         console.log('andOr');
         return [204, 206];
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'in': {
@@ -466,6 +543,9 @@ $(function(){
       'err': function(){
         console.log('in');
         return 205;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     '(': {
@@ -477,12 +557,18 @@ $(function(){
       'err': function(){
         console.log('(');
         return 201;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     ';': {
       'state': true,
       'match': function(x){
         return x == ';';
+      },
+      'semantico': function(){
+        return true;
       }
     }
   }
@@ -496,6 +582,9 @@ $(function(){
       'err': function(){
         console.log('create');
         return 201;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'table': {
@@ -507,6 +596,9 @@ $(function(){
       'err': function(){
         console.log('table');
         return 204;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'tableName': {
@@ -522,6 +614,17 @@ $(function(){
       'err': function(){
         console.log('tableName');
         return 205;
+      },
+      'semantico': function(x, linea){
+        for(let i in semantica.tabla){
+          if(semantica.tabla[i].nombre === x){
+            console.log('tableName', x, linea);
+            updateInfoMessage(302, linea);
+            return false;
+          }
+        }
+        semantica.tabla.push({'nombre':x, 'atributos': 0, 'restricciones': 0});
+        return true;
       }
     },
     '(1': {
@@ -533,6 +636,9 @@ $(function(){
       'err': function(){
         console.log('(1');
         return [201, 204];
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     //Atributos
@@ -549,6 +655,18 @@ $(function(){
       'err': function(){
         console.log('atrib');
         return 201;
+      },
+      'semantico': function(x, linea){
+        let tId = semantica.tabla.length-1;
+        for(let i in semantica.atributos){
+          if(semantica.tabla[tId].nombre == semantica.atributos[i].tabla && semantica.atributos[i].nombre == x){
+            updateInfoMessage(302, linea);
+            return false;
+          }
+        }
+        semantica.atributos.push({'tabla': semantica.tabla[tId].nombre, 'nombre': x, 'tipo': false, 'longitud':false, 'null': true});
+        semantica.tabla[tId].atributos++;
+        return true;
       }
     },
     'tipo': {
@@ -560,6 +678,10 @@ $(function(){
       'err': function(){
         console.log('tipo');
         return [201, 205];
+      },
+      'semantico': function(x){
+        semantica.atributos[semantica.atributos.length-1].tipo=x;
+        return true;
       }
     },
     '(tipo': {
@@ -571,6 +693,9 @@ $(function(){
       'err': function(){
         console.log('(tipo');
         return 206;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'num': {
@@ -582,6 +707,10 @@ $(function(){
       'err': function(){
         console.log('num');
         return 205;
+      },
+      'semantico': function(x){
+        semantica.atributos[semantica.atributos.length-1].longitud = Number(x);
+        return true;
       }
     },
     ')tipo': {
@@ -593,6 +722,9 @@ $(function(){
       'err': function(){
         console.log(')tipo');
         return [201, 205];
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'cualidad': {
@@ -604,6 +736,9 @@ $(function(){
       'err': function(){
         console.log('cualidad');
         return [201, 205];
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'not': {
@@ -615,6 +750,9 @@ $(function(){
       'err': function(){
         console.log('not');
         return 201;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'null': {
@@ -626,6 +764,10 @@ $(function(){
       'err': function(){
         console.log('null');
         return [201, 205];
+      },
+      'semantico': function(x){
+        semantica.atributos[semantica.atributos.length-1].null=false;
+        return true;
       }
     },
     ',': {
@@ -637,6 +779,9 @@ $(function(){
       'err': function(){
         console.log(',');
         return [201, 204];
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     //Constraint
@@ -649,6 +794,9 @@ $(function(){
       'err': function(){
         console.log('constraint');
         return 204;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'identiConstraint':{
@@ -664,6 +812,18 @@ $(function(){
       'err': function(){
         console.log('identiConstraint');
         return 201;
+      },
+      'semantico': function(x, linea){
+        let idTabla = semantica.tabla.length-1;
+        for(let i in semantica.restricciones){
+          if(semantica.tabla[idTabla].nombre == semantica.restricciones[i].tabla && semantica.restricciones[i].nombre == x){
+            updateInfoMessage(304, linea);
+            return false;
+          }
+        }
+        semantica.tabla[idTabla].restricciones++;
+        semantica.restricciones.push({'tabla': semantica.tabla[idTabla].nombre, 'tipo': false, 'nombre': x, 'atrib': false, 'tRef': false, 'aRef': false});
+        return true;
       }
     },
     //Primary
@@ -676,6 +836,12 @@ $(function(){
       'err': function(){
         console.log('primary');
         return 201;
+      },
+      'semantico': function(x){
+        if(!semantica.restricciones[semantica.restricciones.length-1].tipo){
+            semantica.restricciones[semantica.restricciones.length-1].tipo = 1;
+        }
+        return true;
       }
     },
     'key1': {
@@ -687,6 +853,9 @@ $(function(){
       'err': function(){
         console.log('key1');
         return 205;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     '(primary': {
@@ -698,6 +867,9 @@ $(function(){
       'err': function(){
         console.log('(primary');
         return 204;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'atribPrimary': {
@@ -713,6 +885,18 @@ $(function(){
       'err': function(){
         console.log('atribPrimary');
         return 205;
+      },
+      'semantico': function(x, linea){
+        var resId = semantica.restricciones.length-1;
+        for(let i in semantica.atributos){
+          if(semantica.atributos[i].tabla == semantica.restricciones[resId].tabla &&
+            semantica.atributos[i].nombre == x){
+              semantica.restricciones[resId].atrib = x;
+              return true;
+            }
+        }
+        updateInfoMessage(303, linea);
+        return false;
       }
     },
     //Foreign
@@ -725,6 +909,9 @@ $(function(){
       'err': function(){
         console.log('foreign');
         return 201;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'key2': {
@@ -736,6 +923,9 @@ $(function(){
       'err': function(){
         console.log('key2');
         return 205;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     '(foreign': {
@@ -747,6 +937,9 @@ $(function(){
       'err': function(){
         console.log('(foreign');
         return 204;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'atribForeign': {
@@ -762,6 +955,19 @@ $(function(){
       'err': function(){
         console.log('atribForeign');
         return 205;
+      },
+      'semantico': function(x, linea){
+        var resId = semantica.restricciones.length-1;
+        for(let i in semantica.atributos){
+          if(semantica.atributos[i].tabla == semantica.restricciones[resId].tabla &&
+            semantica.atributos[i].nombre == x){
+              semantica.restricciones[resId].atrib = x;
+              return true;
+            }
+        }
+        updateInfoMessage(303, linea);
+        console.log(x, semantica);
+        return false;
       }
     },
     ')foreign': {
@@ -773,6 +979,9 @@ $(function(){
       'err': function(){
         console.log(')foreign');
         return 201;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'references': {
@@ -784,6 +993,9 @@ $(function(){
       'err': function(){
         console.log('references');
         return 204;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'tableReferences': {
@@ -799,6 +1011,17 @@ $(function(){
       'err': function(){
         console.log('tableReferences');
         return 205;
+      },
+      'semantico': function(x, linea){
+        let idRes = semantica.restricciones.length-1;
+        for(let i in semantica.tabla){
+          if(semantica.tabla[i].nombre == x){
+            semantica.restricciones[idRes].tRef = x;
+            return true;
+          }
+        }
+        updateInfoMessage(305, linea);
+        return false;
       }
     },
     '(foreign2': {
@@ -810,6 +1033,9 @@ $(function(){
       'err': function(){
         console.log('(foreign2');
         return 204;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'atribRefereces': {
@@ -825,6 +1051,31 @@ $(function(){
       'err': function(){
         console.log('atribRefereces');
         return 205;
+      },
+      'semantico': function(x, linea){
+        let idRes = semantica.restricciones.length-1;
+        for(let i in semantica.atributos){
+          if(semantica.atributos[i].tabla == semantica.restricciones[idRes].tRef && semantica.atributos[i].nombre == x){
+            for(let j in semantica.atributos){
+              if(semantica.atributos[j].tabla == semantica.restricciones[idRes].tabla && semantica.atributos[j].nombre == semantica.restricciones[idRes].atrib){
+                if(semantica.atributos[i].tipo == semantica.atributos[j].tipo){
+                  if(semantica.atributos[i].longitud == semantica.atributos[j].longitud){
+                    semantica.restricciones[idRes].aRef = x
+                    return true;
+                  }else{
+                    updateInfoMessage(308, linea);
+                    return false;
+                  }
+                }else{
+                  updateInfoMessage(307, linea);
+                  return false;
+                }
+              }
+            }
+          }
+        }
+        updateInfoMessage(305, linea)
+        return false;
       }
     },
     ')primFore': {
@@ -836,6 +1087,9 @@ $(function(){
       'err': function(){
         console.log(')primFore');
         return 205;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     //End of query
@@ -848,12 +1102,18 @@ $(function(){
       'err': function(){
         console.log(')');
         return 205;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     ';': {
       'state': true,
       'match': function(x){
         return x == ';';
+      },
+      'semantico': function(){
+        return true;
       }
     }
   }
@@ -867,6 +1127,14 @@ $(function(){
       'err': function(){
         console.log('insert');
         return 201;
+      },
+      'semantico': function(x){
+        insertStack = {
+          'table': '',
+          'atribs': [],
+          'values':[]
+        };
+        return true;
       }
     },
     'into': {
@@ -878,6 +1146,9 @@ $(function(){
       'err': function(){
         console.log('into');
         return 204;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'tabla': {
@@ -893,6 +1164,22 @@ $(function(){
       'err': function(){
         console.log('tabla');
         return [201, 205];
+      },
+      'semantico': function(x, linea){
+        insertStack.tabla = x;
+        for(let i in semantica.tabla){
+          if(semantica.tabla[i].nombre == x){
+            for(let j in semantica.atributos){
+              if(semantica.atributos[j].tabla == x){
+                insertStack.atribs.push(semantica.atributos[j].nombre)
+              }
+            }
+            insertStack.table = x;
+            return true;
+          }
+        }
+        updateInfoMessage(305,linea)
+        return false;
       }
     },
     '(1': {
@@ -904,6 +1191,9 @@ $(function(){
       'err': function(){
         console.log('(1');
         return 204;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'atrib': {
@@ -919,6 +1209,28 @@ $(function(){
       'err': function(){
         console.log('atrib');
         return 205;
+      },
+      'semantico': function(x, line){
+        for(let i in semantica.atributos){
+          if(semantica.atributos[i].table == insertStack.table && semantica.atributos[i].nombre == x){
+            for(let j in insertStack.atribs){
+              if(insertStack.atribs[j]==x){
+                insertStack.atribs.splice(j, 1);
+                insertStack.atribs.values.push({
+                  'nombre': semantica.atributos[i].nombre,
+                  'tipo': semantica.atributos[i].tipo,
+                  'logitud': semantica.atributos[i].longitud
+                });
+                return true;
+              }
+            }
+
+            updateInfoMessage(302, line);
+            return false;
+          }
+        }
+        updateInfoMessage(303, line);
+        return false;
       }
     },
     ',1': {
@@ -930,6 +1242,9 @@ $(function(){
       'err': function(){
         console.log(',1');
         return 204;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     ')1': {
@@ -941,6 +1256,9 @@ $(function(){
       'err': function(){
         console.log(')1');
         return 201;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'values': {
@@ -952,6 +1270,31 @@ $(function(){
       'err': function(){
         console.log('values');
         return 205;
+      },
+      'semantico': function(x){
+        if(insertStack.values.length==0){
+
+        }else{
+          if(insertStack.values[0].tipo == 'numeric' && x[0]=="\'" ){
+            if(insertStack.values[0].longitud < x.length-2){
+              updateInfoMessage(308, line)
+              return false;
+            }else{
+              return true;
+            }
+          }else if(insertStack.values[0].tipo != 'numeric' && x[0]!="\'"){
+            if(insertStack.values[0].longitud < x.length){
+              updateInfoMessage(308, line)
+              return false;
+            }else{
+              return true;
+            }
+          }
+          else{
+            updateInfoMessage(307, line)
+            return false;
+          }
+        }
       }
     },
     '(2': {
@@ -963,6 +1306,9 @@ $(function(){
       'err': function(){
         console.log('(2');
         return 206;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     'constante': {
@@ -978,6 +1324,10 @@ $(function(){
       'err': function(){
         console.log('constante');
         return 205;
+      },
+      'semantico': function(x, linea){
+        // for(let i in )
+        return true;
       }
     },
     ',2': {
@@ -989,6 +1339,9 @@ $(function(){
       'err': function(){
         console.log(',2');
         return 206;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     ')2': {
@@ -1000,12 +1353,18 @@ $(function(){
       'err': function(){
         console.log(')2');
         return 205;
+      },
+      'semantico': function(x){
+        return true;
       }
     },
     ';': {
       'state': true,
       'match': function(x){
         return x == ';';
+      },
+      'semantico': function(){
+        return true;
       }
     }
   }
@@ -1041,9 +1400,60 @@ $(function(){
     '208': {
       code:208,
       text: 'Operador Relacional'
+    },
+    '301': {
+      code: 301,
+      text: 'El tipo de dato no existe'
+    },
+    '302':{
+      code: 302,
+      text: 'El nombre de atributo se especifica más de una vez'
+    },
+    '303':{
+      code: 303,
+      text: 'El nombre de atributo no existe en la tabla'
+    },
+    '304': {
+      code: 304,
+      text: 'El nombre de restricción está duplicado'
+    },
+    '305':{
+      code: 305,
+      text: 'Se hace referencia a un atributo no válido'
+    },
+    '306':{
+      code: 306,
+      text: 'El nombre de la restricción está duplicado'
+    },
+    '307':{
+      code: 307,
+      text: 'Los valores especificados no corresponden'
+    },
+    '308': {
+      code: 308,
+      text: 'Los datos de cadena o binarios se truncarían'
+    },
+    '311': {
+      code: 311,
+      text: 'El nombre de atributo no es válido'
+    },
+    '312': {
+      code: 312,
+      text: 'El nombre de atributo es ambiguo'
+    },
+    '313': {
+      code: 313,
+      text: 'Conversión de tipo de dato'
+    },
+    '314': {
+      code: 314,
+      text: 'Nombre de objeto inválido'
+    },
+    '315':{
+      code: 315,
+      text: 'Identificador inválido'
     }
   }
-
   // Resizable panel
   paneles = Split(['#codeContainer', '#tableContainer'], {
     direction: 'vertical',
@@ -1094,13 +1504,20 @@ $(function(){
       if(paneles.getSizes()[1]<=1){
         paneles.setSizes([70, 30]);
       }
-      if(checkSintax(tablaLexica)){
-
-      }
+      checkSintax(tablaLexica);
     }else{
       updateInfoMessage(tablaLexica.code, tablaLexica.linea);
     }
   });
+
+  $eraseBtn = $('#eraseDb');
+  $eraseBtn.on('click', function() {
+    semantica = {
+      tabla:[],
+      atributos:[],
+      restricciones:[]
+    }
+  })
 });
 
 function imprimirTabla(data, target){
