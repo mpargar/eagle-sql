@@ -20,7 +20,9 @@ var semantica_copy = {};
 var insertStack = {
   'table': '',
   'atribs': [],
-  'values':[]
+  'values':[],
+  'indx': 0,
+  'ins': []
 }
 //String prototype, para generar foreach
 String.prototype.forEach = function (call) {
@@ -1129,11 +1131,6 @@ $(function(){
         return 201;
       },
       'semantico': function(x){
-        insertStack = {
-          'table': '',
-          'atribs': [],
-          'values':[]
-        };
         return true;
       }
     },
@@ -1166,14 +1163,9 @@ $(function(){
         return [201, 205];
       },
       'semantico': function(x, linea){
-        insertStack.tabla = x;
+        insertStack.table = x;
         for(let i in semantica.tabla){
           if(semantica.tabla[i].nombre == x){
-            for(let j in semantica.atributos){
-              if(semantica.atributos[j].tabla == x){
-                insertStack.atribs.push(semantica.atributos[j].nombre)
-              }
-            }
             insertStack.table = x;
             return true;
           }
@@ -1193,6 +1185,7 @@ $(function(){
         return 204;
       },
       'semantico': function(x){
+        insertStack.atribs = [];
         return true;
       }
     },
@@ -1211,21 +1204,18 @@ $(function(){
         return 205;
       },
       'semantico': function(x, line){
-        for(let i in semantica.atributos){
-          if(semantica.atributos[i].tabla == insertStack.table && semantica.atributos[i].nombre == x){
-            for(let j in insertStack.atribs){
-              if(insertStack.atribs[j]==x){
-                insertStack.atribs.splice(j, 1);
-                insertStack.values.push({
-                  'nombre': semantica.atributos[i].nombre,
-                  'tipo': semantica.atributos[i].tipo,
-                  'longitud': semantica.atributos[i].longitud
-                });
-                return true;
-              }
-            }
+        for(let i in insertStack.atribs){
+          if(x == insertStack.atribs[i]){
             updateInfoMessage(302, line);
             return false;
+          }
+        }
+        for(let i in semantica.atributos){
+          if(insertStack.table == semantica.atributos[i].tabla &&
+             semantica.atributos[i].nombre == x){
+              insertStack.atribs.push(x);
+              insertStack.values.push(semantica.atributos[i]);
+              return true;
           }
         }
         updateInfoMessage(303, line);
@@ -1302,33 +1292,33 @@ $(function(){
         console.log('constante');
         return 205;
       },
-      'semantico': function(x, linea){
-        console.log(insertStack.values[0].tipo, x.length);
-        if(insertStack.values.length==0){
-          
-        }else{
-          if(insertStack.values[0].tipo == 'numeric' && x[0]!="\'" ){
-            // console.log('-> 1');
-            if(insertStack.values[0].longitud < x.length){
-              updateInfoMessage(308, linea)
-              return false;
-            }else{
-              return true;
-            }
-          }else if(insertStack.values[0].tipo == 'char' && x[0]=="\'"){
-            // console.log('-> 2');
-            // console.log(insertStack.values[0], x.length-2);
-            if(insertStack.values[0].longitud < x.length-2){
-              updateInfoMessage(308, linea)
-              return false;
-            }else{
-              return true;
+      'semantico': function(x, line){
+        let indx = insertStack.indx;
+        if(!insertStack.atribs){
+          insertStack.atribs = []
+          for(let i in semantica.atributos){
+            if(semantica.atributos[i].tabla == insertStack.table){
+              insertStack.atribs.push(semantica.atributos[i].nombre);
+              insertStack.values.push(semantica.atributos[i]);
             }
           }
-          else{
-            updateInfoMessage(307, linea)
+        }
+        if (indx >= insertStack.atribs.length) {
+          updateInfoMessage(309, line)
+          console.log('aqui', insertStack);
+          return false;
+        }
+        if( (insertStack.values[indx].tipo == 'char' && x[0] == "\'") || (insertStack.values[indx].tipo == 'numeric' && x[0] != "\'") ){
+          if(!insertStack.values[indx].longitud || (x.length - ((insertStack.values[indx].tipo == 'char')?2:0)) <= insertStack.values[indx].longitud){
+            insertStack.indx++;
+            return true;
+          }else{
+            updateInfoMessage(308, line);            
             return false;
           }
+        }else{
+          updateInfoMessage(307, line);
+          return false;
         }
       }
     },
@@ -1373,87 +1363,113 @@ $(function(){
   error_codes = {
     '101': {
       code:101,
-      text: 'Símbolo desconocido'
+      text: 'Símbolo desconocido',
+      extraTxt: ''
     },
     '200': {
       code:200,
-      text: 'Sin error'
+      text: 'Sin error',
+      extraTxt: ''
     },
     '201': {
       code:201,
-      text: 'Palabra Reservada'
+      text: 'Palabra Reservada',
+      extraTxt: 'Se esperaba'
     },
     '204': {
       code:204,
-      text: 'Identificador'
+      text: 'Identificador',
+      extraTxt: 'Se esperaba'
     },
     '205': {
       code:205,
-      text: 'Delimitador'
+      text: 'Delimitador',
+      extraTxt: 'Se esperaba'
     },
     '206': {
       code:206,
-      text: 'Constante'
+      text: 'Constante',
+      extraTxt: 'Se esperaba'
     },
     '207': {
       code:207,
-      text: 'Operador'
+      text: 'Operador',
+      extraTxt: 'Se esperaba'
     },
     '208': {
       code:208,
-      text: 'Operador Relacional'
+      text: 'Operador Relacional',
+      extraTxt: 'Se esperaba'
     },
     '301': {
       code: 301,
-      text: 'El tipo de dato no existe'
+      text: 'El tipo de dato no existe',
+      extraTxt: ''
     },
     '302':{
       code: 302,
-      text: 'El nombre de atributo se especifica más de una vez'
+      text: 'El nombre de atributo se especifica más de una vez',
+      extraTxt: ''
     },
     '303':{
       code: 303,
-      text: 'El nombre de atributo no existe en la tabla'
+      text: 'El nombre de atributo no existe en la tabla',
+      extraTxt: ''
     },
     '304': {
       code: 304,
-      text: 'El nombre de restricción está duplicado'
+      text: 'El nombre de restricción está duplicado',
+      extraTxt: ''
     },
     '305':{
       code: 305,
-      text: 'Se hace referencia a un atributo no válido'
+      text: 'Se hace referencia a un atributo no válido',
+      extraTxt: ''
     },
     '306':{
       code: 306,
-      text: 'El nombre de la restricción está duplicado'
+      text: 'El nombre de la restricción está duplicado',
+      extraTxt: ''
     },
     '307':{
       code: 307,
-      text: 'Los valores especificados no corresponden'
+      text: 'Los valores especificados no corresponden',
+      extraTxt: ''
     },
     '308': {
       code: 308,
-      text: 'Los datos de cadena o binarios se truncarían'
+      text: 'Los datos de cadena o binarios se truncarían',
+      extraTxt: ''
+    },
+    '309': {
+      code: 309,
+      text: 'La cantidad de atributos no coincide con los valores',
+      extraTxt: ''
     },
     '311': {
       code: 311,
-      text: 'El nombre de atributo no es válido'
+      text: 'El nombre de atributo no es válido',
+      extraTxt: ''
     },
     '312': {
       code: 312,
-      text: 'El nombre de atributo es ambiguo'
+      text: 'El nombre de atributo es ambiguo',
+      extraTxt: ''
     },
     '313': {
       code: 313,
-      text: 'Conversión de tipo de dato'
+      text: 'Conversión de tipo de dato',
+      extraTxt: ''
     },
     '314': {
       code: 314,
-      text: 'Nombre de objeto inválido'
+      text: 'Nombre de objeto inválido',
+      extraTxt: ''
     },
     '315':{
       code: 315,
-      text: 'Identificador inválido'
+      text: 'Identificador inválido',
+      extraTxt: ''
     }
   }
   // Resizable panel
@@ -1519,6 +1535,8 @@ $(function(){
       atributos:[],
       restricciones:[]
     }
+    console.log(semantica);
+    
   })
 });
 
@@ -1559,7 +1577,7 @@ function imprimirTabla(data, target){
         string +=`:
         </span>
         Error en línea
-        <span>${linea}</span> Se esperaba <b><i>${error_codes[c[0]].text}</i></b>`;
+        <span>${linea}</span> ${error_codes[c[0]].extraTxt} <b><i>${error_codes[c[0]].text}</i></b>`;
         for(let i = 1; i<c.length;  i++){
           string += `${(i==c.length-1)?' o ':', '}<b><i>${error_codes[c[i]].text}</i></b>`;
         }
@@ -1578,7 +1596,7 @@ function imprimirTabla(data, target){
           Errror #${error_codes[c].code}:
           </span>
           Error en línea
-          <span>${linea}</span> Se esperaba <b><i>${error_codes[c].text}</i></b>`
+          <span>${linea}</span> ${error_codes[c].extraTxt} <b><i>${error_codes[c].text}</i></b>`
         );
       }
     }

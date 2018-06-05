@@ -32,6 +32,13 @@ function checkStatement(statement){
   }else if(statement[0][0].toLowerCase()=='insert'){
     arbol = DDL_INSERT;
     apun = 'insert';
+    insertStack = {
+      'table': '',
+      'atribs': false,
+      'values': [],
+      'indx': 0,
+      'ins': []
+    }
   }
   else{
     updateInfoMessage(201, statement[0][1]);
